@@ -38,6 +38,7 @@ bibliography: "../StatisticalLearning.bib"
 if(!require("knitr")) install.packages("knitr")
 if(!require("tree")) install.packages("tree")
 if(!require("ISLR")) install.packages("ISLR")
+if(!require("ISLR2")) install.packages("ISLR2")
 if(!require("rpart.plot")) install.packages("rpart.plot")
 ```
 
@@ -46,8 +47,8 @@ if(!require("rpart.plot")) install.packages("rpart.plot")
 # This chunk is used to do the assignment of values to R variables
 # This code must be adapted to any change of datasets or 
 
-myDescription <- "The data are a simulated data set containing sales of child car seats at different stores [@james2013introduction]"
-mydataset <- Carseats
+myDescription <- "The data are a simulated data set containing 1070 purchases where the customer either purchased Citrus Hill or Minute Maid Orange Juice. A number of characteristics of the customer and product are recorded. [@james2013introduction]"
+mydataset <- OJ
 ```
 
 
@@ -58,30 +59,39 @@ p <- ncol(mydataset)
 
 # Introductory example
 
-## The Pima Indians dataset
+## The Orange Juice dataset
 
-The Pima Indian Diabetes data set (`PimaIndiansDiabetes2`) is available in the `mlbench` package.
+The Orange Juice data set (`OJ`) is available in the `ISLR2` package.
 
-The data contains 768 individuals (female) and 9 clinical variables for predicting the probability of individuals in being diabete-positive or negative:
+The data contains 1070 purchases where the customer either purchased Citrus Hill or Minute Maid Orange Juice. A number of characteristics of the customer and product are recorded:
 
-- pregnant: number of times pregnant
-- glucose: plasma glucose concentration
-- pressure: diastolic blood pressure (mm Hg)
-- triceps: triceps skin fold thickness (mm)
-- insulin: 2-Hour serum insulin (mu U/ml)
-- mass: body mass index (weight in kg/(height in m)^2)
-- pedigree: diabetes pedigree function
-- age: age (years)
-- diabetes: class variable
+- Purchase: A factor with levels CH and MM indicating whether the customer purchased Citrus Hill or Minute Maid Orange Juice
+- WeekofPurchase: Week of purchase
+- StoreID: Store ID
+- PriceCH: Price charged for CH
+- DiscCH: Discount offered for CH
+- DiscMM: Discount offered for MM
+- SpecialCH: Indicator of special on CH
+- SpecialMM: Indicator of special on MM
+- LoyalCH: Customer brand loyalty for CH
+- SalePriceMM: Sale price for MM
+- SalePriceCH: Sale price for CH
+- PriceDiff: Sale price of MM less sale price of CH
+- Store7: A factor with levels No and Yes indicating whether the sale is at Store 7
+- PctDiscMM: Percentage discount for MM
+- PctDiscCH: Percentage discount for CH
+- SpecialMM: Indicator of special on MM
+- ListPriceDiff: List price of MM less list price of CH
+- STORE: Which of 5 possible stores the sale occured at
 
 A typical classification/prediction problem is to build a model that can distinguish and predict diabetes using some or all the variables in the dataset.
 
-A quick exploration can be done wirh the `swirl` package:
+A quick exploration can be done with the `skimr` package:
 
 ```{r}
 library(skimr)
-data("PimaIndiansDiabetes2", package = "mlbench")
-skim(PimaIndiansDiabetes2)
+#data("OJ", package = "ISLR2")
+skim(mydataset)
 ```
 
 ## Building a classification tree with `rpart``
@@ -90,7 +100,7 @@ Start building a simple tree with default parameters
 
 ```{r}
 library(rpart)
-model1 <- rpart(diabetes ~., data = PimaIndiansDiabetes2)
+model1 <- rpart(Purchase ~., data = mydataset)
 # par(xpd = NA) # otherwise on some devices the text is clipped
 ```
 
@@ -119,22 +129,22 @@ detach(package:rpart.plot)
 If we believed the model was ready for use we could use it to predict diabetes for new subject.
 
 
-**Imagine we kow nothing about overfitting**. We may want to check the accuracy of the model on the dataset we have used to build it.
+**Imagine we know nothing about overfitting**. We may want to check the accuracy of the model on the dataset we have used to build it.
 
 ```{r}
-predicted.classes<- predict(model1, PimaIndiansDiabetes2, "class")
-mean(predicted.classes == PimaIndiansDiabetes2$diabetes)
+predicted.classes<- predict(model1, OJ, "class")
+mean(predicted.classes == OJ$Purchase)
 ```
 
 A better strategy is to use train dataset to build the model and a test dataset to check how it works.
 
 ```{r}
 set.seed(123)
-ssize <- nrow(PimaIndiansDiabetes2)
-propTrain <- 0.8
+ssize <- nrow(mydataset)
+propTrain <- (800/n) #0.8
 training.indices <-sample(1:ssize, floor(ssize*propTrain))
-train.data  <- PimaIndiansDiabetes2[training.indices, ]
-test.data <- PimaIndiansDiabetes2[-training.indices, ]
+train.data  <- mydataset[training.indices, ]
+test.data <- mydataset[-training.indices, ]
 ```
 
 Now we build the model on the train data and check its accuracy on the test data.
