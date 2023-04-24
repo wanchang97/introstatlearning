@@ -39,6 +39,7 @@ editor_options:
 
 if(!require("knitr")) install.packages("knitr")
 if(!require("tree")) install.packages("tree")
+#if(!require("caret")) install.packages("caret?")
 if(!require("ISLR")) install.packages("ISLR")
 if(!require("rpart.plot")) install.packages("rpart.plot")
 ```
@@ -54,7 +55,6 @@ library(foreach)     # for parallel processing with for loops
 library(caret)       # for general model fitting
 library(rpart)       # for fitting decision trees
 library(ipred)       # for fitting bagged decision trees
-
 ```
 
 # Bagging trees
