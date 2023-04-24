@@ -427,6 +427,7 @@ arbol_regresion <- tree::tree(
 # Optimization
 set.seed(123)
 cv_arbol <- tree::cv.tree(arbol_regresion, K = 5)
+summary(arbol_regresion)
 ```
 
 The function returns an object `cv_arbol` containing:
@@ -481,6 +482,7 @@ arbol_final <- tree::prune.tree(
 par(mar = c(1,1,1,1))
 plot(x = arbol_final, type = "proportional")
 text(x = arbol_final, splits = TRUE, pretty = 0, cex = 0.8, col = "firebrick")
+summary(arbol_final)
 ```
 
 ## Predicting with the model
@@ -492,7 +494,7 @@ The quality of the prediction is based in the Root Mean Square.
 For the original tree one has:
 
 ```{r}
-predicciones <- predict(arbol_regresion, newdata = datos_test)
+predicciones <- stats::predict(arbol_regresion, newdata = datos_test)
 test_rmse    <- sqrt(mean((predicciones - datos_test$medv)^2))
 paste("Error de test (rmse) del árbol inicial:", round(test_rmse,2))
 ```
@@ -500,7 +502,7 @@ paste("Error de test (rmse) del árbol inicial:", round(test_rmse,2))
 And for the final tree:
 
 ```{r}
-predicciones_finales <- predict(arbol_final, newdata = datos_test)
+predicciones_finales <- stats::predict(arbol_final, newdata = datos_test)
 test_rmse    <- sqrt(mean((predicciones - datos_test$medv)^2))
 paste("Error de test (rmse) del árbol final:", round(test_rmse,2))
 ```
@@ -609,8 +611,15 @@ If we use `caret`instead of `rpart` the total reduction in the loss function acr
 # Exercises
 
 This problem involves the $O J$ data set which is part of the ISLR2 package.
+```{r}
+library(ISLR2)
+dataOJ = OJ # Orange Juice Data containing 1070 purchases where the customer either purchases Citrus Hill or Minute Maid Orange Juice
+head(dataOJ)
+summary(dataOJ)
+```
 
 (a) Create a training set containing a random sample of 800 observations, and a test set containing the remaining observations.
+
 (b) Fit a tree to the training data, with Purchase as the response and the other variables as predictors. Use the summary () function to produce summary statistics about the tree, and describe the results obtained. What is the training error rate? How many terminal nodes does the tree have?
 (c) Type in the name of the tree object in order to get a detailed text output. Pick one of the terminal nodes, and interpret the information displayed.
 (d) Create a plot of the tree, and interpret the results.
